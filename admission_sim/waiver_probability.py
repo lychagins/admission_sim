@@ -65,6 +65,55 @@ class WaiverProbabilityEstimator:
             self.model = sm.Logit(y, X_with_const).fit(disp=False)
         self.is_fitted = True
         
+        # Print parameter estimates table
+        self._print_parameter_table()
+    
+    def _print_parameter_table(self) -> None:
+        """Print a formatted table of model parameter estimates."""
+        if not self.is_fitted or self.model is None:
+            return
+        
+        # Feature names
+        feature_names = ['Intercept', 'Priority Score', 'Waiver', 'Background Score', 
+                        'Waiver × Priority Score']
+        
+        # Get parameter estimates and standard errors
+        params = self.model.params
+        std_errors = self.model.bse
+        z_values = self.model.tvalues
+        p_values = self.model.pvalues
+        
+        # Print header
+        print("\n" + "="*80)
+        print("Logistic Regression Model - Parameter Estimates")
+        print("="*80)
+        
+        # Print column headers
+        print(f"{'Variable':<25} {'Coefficient':>12} {'Std Error':>12} {'z-value':>10} {'P>|z|':>10}")
+        print("-"*80)
+        
+        # Print each parameter
+        for i, name in enumerate(feature_names):
+            if i < len(params):
+                coef = params[i]
+                se = std_errors[i]
+                z = z_values[i]
+                p = p_values[i]
+                
+                # Format p-value
+                if p < 0.001:
+                    p_str = "<0.001"
+                else:
+                    p_str = f"{p:.3f}"
+                
+                print(f"{name:<25} {coef:>12.4f} {se:>12.4f} {z:>10.3f} {p_str:>10}")
+        
+        print("="*80)
+        print(f"Number of observations: {self.model.nobs:.0f}")
+        print(f"Log-Likelihood: {self.model.llf:.3f}")
+        print(f"Pseudo R-squared: {self.model.prsquared:.3f}")
+        print("="*80 + "\n")
+        
     def predict_probability(self, priority_score: float, waiver: float, 
                           background_score: float = 0) -> float:
         """
