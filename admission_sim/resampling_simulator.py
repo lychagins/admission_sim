@@ -32,7 +32,7 @@ class ResamplingSimulator:
         
         Args:
             admissions_data: List of dictionaries containing past admissions:
-                - 'ranking': int, student ranking
+                - 'priority_score': float, student priority score (higher is better)
                 - 'waiver': float, tuition waiver percentage
                 - 'accepted': bool, acceptance decision
                 - 'background_score': float, optional
@@ -53,7 +53,7 @@ class ResamplingSimulator:
         Args:
             num_offers: Total number of offers to make
             waiver_allocation: List of waiver assignments:
-                - 'ranking': int, student ranking
+                - 'priority_score': float, student priority score
                 - 'waiver': float, waiver percentage (0-1)
                 - 'background_score': float, optional
             num_simulations: Number of Monte Carlo simulations to run
@@ -64,7 +64,7 @@ class ResamplingSimulator:
                 - 'expected_acceptances': Expected number of students accepting
                 - 'acceptance_distribution': Distribution of acceptance counts
                 - 'student_probabilities': Probability each student accepts
-                - 'mean_ranking': Expected mean ranking of accepted students
+                - 'mean_priority_score': Expected mean priority score of accepted students
                 - 'composition_stats': Statistics about student body composition
         """
         if random_seed is not None:
@@ -91,14 +91,14 @@ class ResamplingSimulator:
         expected_acceptances = np.mean(simulation_results)
         std_acceptances = np.std(simulation_results)
         
-        # Calculate mean ranking of accepted students
-        all_rankings = []
+        # Calculate mean priority score of accepted students
+        all_priority_scores = []
         for accepted_list in accepted_students_per_sim:
             if accepted_list:
-                rankings = [s.get('ranking', 0) for s in accepted_list]
-                all_rankings.extend(rankings)
+                priority_scores = [s.get('priority_score', 0) for s in accepted_list]
+                all_priority_scores.extend(priority_scores)
         
-        mean_ranking = np.mean(all_rankings) if all_rankings else 0
+        mean_priority_score = np.mean(all_priority_scores) if all_priority_scores else 0
         
         # Calculate composition statistics
         background_scores = []
@@ -112,7 +112,7 @@ class ResamplingSimulator:
             'std_acceptances': std_acceptances,
             'acceptance_distribution': dict(acceptance_counts),
             'student_probabilities': student_probabilities,
-            'mean_ranking': mean_ranking,
+            'mean_priority_score': mean_priority_score,
             'composition_stats': {
                 'mean_background_score': np.mean(background_scores) if background_scores else 0,
                 'std_background_score': np.std(background_scores) if background_scores else 0
@@ -143,7 +143,7 @@ class ResamplingSimulator:
             if self.waiver_probability_model.is_fitted:
                 for student in waiver_allocation:
                     prob = self.waiver_probability_model.predict_probability(
-                        ranking=student.get('ranking', 0),
+                        priority_score=student.get('priority_score', 0),
                         waiver=student.get('waiver', 0),
                         background_score=student.get('background_score', 0)
                     )
@@ -172,7 +172,7 @@ class ResamplingSimulator:
         for student in waiver_allocation:
             # Find similar students in historical data
             similar_students = self._find_similar_students(
-                ranking=student.get('ranking', 0),
+                priority_score=student.get('priority_score', 0),
                 waiver=student.get('waiver', 0),
                 background_score=student.get('background_score', 0)
             )
@@ -187,18 +187,18 @@ class ResamplingSimulator:
         
         return probabilities
     
-    def _find_similar_students(self, ranking: int, waiver: float, 
+    def _find_similar_students(self, priority_score: float, waiver: float, 
                                background_score: float = 0,
-                               ranking_window: int = 5,
+                               priority_score_window: float = 10.0,
                                waiver_window: float = 0.2) -> List[Dict]:
         """
         Find similar students in historical data.
         
         Args:
-            ranking: Target ranking
+            priority_score: Target priority score
             waiver: Target waiver amount
             background_score: Target background score
-            ranking_window: Window for ranking similarity
+            priority_score_window: Window for priority score similarity
             waiver_window: Window for waiver similarity
             
         Returns:
@@ -207,10 +207,10 @@ class ResamplingSimulator:
         similar = []
         
         for record in self.admissions_data:
-            rank_diff = abs(record.get('ranking', 0) - ranking)
+            score_diff = abs(record.get('priority_score', 0) - priority_score)
             waiver_diff = abs(record.get('waiver', 0) - waiver)
             
-            if rank_diff <= ranking_window and waiver_diff <= waiver_window:
+            if score_diff <= priority_score_window and waiver_diff <= waiver_window:
                 similar.append(record)
         
         return similar
@@ -230,24 +230,30 @@ class ResamplingSimulator:
         Returns:
             Dictionary with optimal allocation and expected results
         """
-        # Simple greedy allocation: give more to top-ranked students
+        # Simple greedy allocation: give more to higher priority students
         # This is a basic heuristic; more sophisticated optimization could be added
         
         waiver_per_student = total_waiver_budget / num_offers
         
-        # Create allocation
+        # Create allocation with descending priority scores
+        # Assume priority scores range from high to low (e.g., 100 down to some minimum)
+        # For a generic optimization, we'll create a linear distribution
         allocation = []
-        for rank in range(1, num_offers + 1):
-            # Give slightly more waiver to top students
-            # Uses a linear decay based on ranking
+        for i in range(num_offers):
+            # Priority scores decrease linearly: highest first
+            # Using 100 as max and creating a distribution
+            priority_score = 100.0 - (i * 90.0 / max(1, num_offers - 1)) if num_offers > 1 else 100.0
+            
+            # Give slightly more waiver to higher priority students
+            # Uses a linear decay based on priority
             waiver_multiplier = (
                 WAIVER_OPTIMIZATION_BASE_MULTIPLIER + 
-                (num_offers - rank) / (num_offers * WAIVER_OPTIMIZATION_RANGE_DIVISOR)
+                (num_offers - i) / (num_offers * WAIVER_OPTIMIZATION_RANGE_DIVISOR)
             )
             waiver = min(1.0, waiver_per_student * waiver_multiplier)
             
             allocation.append({
-                'ranking': rank,
+                'priority_score': priority_score,
                 'waiver': waiver,
                 'background_score': 0
             })

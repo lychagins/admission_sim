@@ -14,21 +14,21 @@ def create_sample_data():
     # Sample historical admissions data
     # In practice, this would be loaded from a CSV or database
     admissions_data = [
-        {'ranking': 1, 'waiver': 0.5, 'accepted': True, 'background_score': 95, 'student_id': 'S001'},
-        {'ranking': 2, 'waiver': 0.4, 'accepted': True, 'background_score': 92, 'student_id': 'S002'},
-        {'ranking': 3, 'waiver': 0.3, 'accepted': True, 'background_score': 88, 'student_id': 'S003'},
-        {'ranking': 4, 'waiver': 0.5, 'accepted': True, 'background_score': 85, 'student_id': 'S004'},
-        {'ranking': 5, 'waiver': 0.2, 'accepted': False, 'background_score': 82, 'student_id': 'S005'},
-        {'ranking': 6, 'waiver': 0.6, 'accepted': True, 'background_score': 80, 'student_id': 'S006'},
-        {'ranking': 7, 'waiver': 0.3, 'accepted': False, 'background_score': 78, 'student_id': 'S007'},
-        {'ranking': 8, 'waiver': 0.4, 'accepted': True, 'background_score': 75, 'student_id': 'S008'},
-        {'ranking': 9, 'waiver': 0.1, 'accepted': False, 'background_score': 72, 'student_id': 'S009'},
-        {'ranking': 10, 'waiver': 0.5, 'accepted': True, 'background_score': 70, 'student_id': 'S010'},
-        {'ranking': 11, 'waiver': 0.2, 'accepted': False, 'background_score': 68, 'student_id': 'S011'},
-        {'ranking': 12, 'waiver': 0.7, 'accepted': True, 'background_score': 65, 'student_id': 'S012'},
-        {'ranking': 13, 'waiver': 0.3, 'accepted': False, 'background_score': 63, 'student_id': 'S013'},
-        {'ranking': 14, 'waiver': 0.4, 'accepted': True, 'background_score': 60, 'student_id': 'S014'},
-        {'ranking': 15, 'waiver': 0.1, 'accepted': False, 'background_score': 58, 'student_id': 'S015'},
+        {'priority_score': 95.5, 'waiver': 0.5, 'accepted': True, 'background_score': 95, 'student_id': 'S001'},
+        {'priority_score': 92.3, 'waiver': 0.4, 'accepted': True, 'background_score': 92, 'student_id': 'S002'},
+        {'priority_score': 88.7, 'waiver': 0.3, 'accepted': True, 'background_score': 88, 'student_id': 'S003'},
+        {'priority_score': 85.2, 'waiver': 0.5, 'accepted': True, 'background_score': 85, 'student_id': 'S004'},
+        {'priority_score': 82.1, 'waiver': 0.2, 'accepted': False, 'background_score': 82, 'student_id': 'S005'},
+        {'priority_score': 80.4, 'waiver': 0.6, 'accepted': True, 'background_score': 80, 'student_id': 'S006'},
+        {'priority_score': 78.9, 'waiver': 0.3, 'accepted': False, 'background_score': 78, 'student_id': 'S007'},
+        {'priority_score': 75.6, 'waiver': 0.4, 'accepted': True, 'background_score': 75, 'student_id': 'S008'},
+        {'priority_score': 72.3, 'waiver': 0.1, 'accepted': False, 'background_score': 72, 'student_id': 'S009'},
+        {'priority_score': 70.8, 'waiver': 0.5, 'accepted': True, 'background_score': 70, 'student_id': 'S010'},
+        {'priority_score': 68.5, 'waiver': 0.2, 'accepted': False, 'background_score': 68, 'student_id': 'S011'},
+        {'priority_score': 65.9, 'waiver': 0.7, 'accepted': True, 'background_score': 65, 'student_id': 'S012'},
+        {'priority_score': 63.2, 'waiver': 0.3, 'accepted': False, 'background_score': 63, 'student_id': 'S013'},
+        {'priority_score': 60.7, 'waiver': 0.4, 'accepted': True, 'background_score': 60, 'student_id': 'S014'},
+        {'priority_score': 58.1, 'waiver': 0.1, 'accepted': False, 'background_score': 58, 'student_id': 'S015'},
     ]
     return admissions_data
 
@@ -52,15 +52,15 @@ def example_waiver_probability():
     print("-" * 60)
     
     new_students = [
-        {'ranking': 3, 'waiver': 0.5, 'background_score': 90},
-        {'ranking': 7, 'waiver': 0.3, 'background_score': 75},
-        {'ranking': 10, 'waiver': 0.6, 'background_score': 70},
+        {'priority_score': 88.7, 'waiver': 0.5, 'background_score': 90},
+        {'priority_score': 78.9, 'waiver': 0.3, 'background_score': 75},
+        {'priority_score': 70.8, 'waiver': 0.6, 'background_score': 70},
     ]
     
     results = estimator.estimate_acceptance_rates(new_students)
     
     for student in results:
-        print(f"Ranking: {student['ranking']}, Waiver: {student['waiver']*100:.0f}%, "
+        print(f"Priority Score: {student['priority_score']}, Waiver: {student['waiver']*100:.0f}%, "
               f"Background Score: {student['background_score']}")
         print(f"  → Acceptance Probability: {student['acceptance_probability']:.2%}")
     
@@ -82,20 +82,20 @@ def example_resampling_simulation(estimator):
     print("-" * 60)
     
     waiver_allocation = [
-        {'ranking': 1, 'waiver': 0.5, 'background_score': 95},
-        {'ranking': 2, 'waiver': 0.5, 'background_score': 92},
-        {'ranking': 3, 'waiver': 0.4, 'background_score': 88},
-        {'ranking': 4, 'waiver': 0.4, 'background_score': 85},
-        {'ranking': 5, 'waiver': 0.3, 'background_score': 82},
-        {'ranking': 6, 'waiver': 0.3, 'background_score': 80},
-        {'ranking': 7, 'waiver': 0.2, 'background_score': 78},
-        {'ranking': 8, 'waiver': 0.2, 'background_score': 75},
-        {'ranking': 9, 'waiver': 0.1, 'background_score': 72},
-        {'ranking': 10, 'waiver': 0.1, 'background_score': 70},
+        {'priority_score': 95.5, 'waiver': 0.5, 'background_score': 95},
+        {'priority_score': 92.3, 'waiver': 0.5, 'background_score': 92},
+        {'priority_score': 88.7, 'waiver': 0.4, 'background_score': 88},
+        {'priority_score': 85.2, 'waiver': 0.4, 'background_score': 85},
+        {'priority_score': 82.1, 'waiver': 0.3, 'background_score': 82},
+        {'priority_score': 80.4, 'waiver': 0.3, 'background_score': 80},
+        {'priority_score': 78.9, 'waiver': 0.2, 'background_score': 78},
+        {'priority_score': 75.6, 'waiver': 0.2, 'background_score': 75},
+        {'priority_score': 72.3, 'waiver': 0.1, 'background_score': 72},
+        {'priority_score': 70.8, 'waiver': 0.1, 'background_score': 70},
     ]
     
     for student in waiver_allocation:
-        print(f"Rank {student['ranking']}: {student['waiver']*100:.0f}% waiver")
+        print(f"Priority Score {student['priority_score']:.1f}: {student['waiver']*100:.0f}% waiver")
     
     # Run simulation
     print("\nRunning 1000 simulations...")
@@ -110,7 +110,7 @@ def example_resampling_simulation(estimator):
     print("\nSimulation Results:")
     print("-" * 60)
     print(f"Expected acceptances: {results['expected_acceptances']:.2f} ± {results['std_acceptances']:.2f}")
-    print(f"Mean ranking of accepted students: {results['mean_ranking']:.2f}")
+    print(f"Mean priority score of accepted students: {results['mean_priority_score']:.2f}")
     print(f"Mean background score: {results['composition_stats']['mean_background_score']:.2f}")
     
     print("\nAcceptance Distribution:")
@@ -156,7 +156,7 @@ def example_optimization():
     print("\nOptimized Allocation:")
     print("-" * 60)
     for student in optimization_result['allocation'][:5]:  # Show first 5
-        print(f"Rank {student['ranking']}: {student['waiver']*100:.1f}% waiver")
+        print(f"Priority Score {student['priority_score']}: {student['waiver']*100:.1f}% waiver")
     print("  ...")
     
     results = optimization_result['simulation_results']

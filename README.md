@@ -8,7 +8,7 @@ The tool provides two main modules:
 
 1. **Waiver Probability Estimator**: Estimates how tuition waivers affect the probability that a student accepts an offer
    - Uses logistic regression to model acceptance probability
-   - Considers student ranking, waiver amount, and background scores
+   - Considers student priority score, waiver amount, and background scores
    - Provides individual acceptance probability predictions
 
 2. **Resampling Simulator**: Uses resampling of past admission data to predict the composition of student body
@@ -18,7 +18,7 @@ The tool provides two main modules:
    - Provides optimization suggestions for waiver allocation
 
 Both modules use past admissions data including:
-- Background information and ranking of students with offers
+- Background information and priority scores of students with offers
 - Tuition waivers allocated
 - Acceptance decisions
 
@@ -40,8 +40,8 @@ from admission_sim import WaiverProbabilityEstimator, ResamplingSimulator
 
 # Sample historical data
 admissions_data = [
-    {'ranking': 1, 'waiver': 0.5, 'accepted': True, 'background_score': 95},
-    {'ranking': 2, 'waiver': 0.4, 'accepted': True, 'background_score': 92},
+    {'priority_score': 1, 'waiver': 0.5, 'accepted': True, 'background_score': 95},
+    {'priority_score': 2, 'waiver': 0.4, 'accepted': True, 'background_score': 92},
     # ... more data
 ]
 
@@ -49,15 +49,15 @@ admissions_data = [
 estimator = WaiverProbabilityEstimator()
 estimator.fit(admissions_data)
 
-probability = estimator.predict_probability(ranking=3, waiver=0.5, background_score=90)
+probability = estimator.predict_probability(priority_score=3, waiver=0.5, background_score=90)
 print(f"Acceptance probability: {probability:.2%}")
 
 # 2. Simulate student body composition
 simulator = ResamplingSimulator(admissions_data, estimator)
 
 waiver_allocation = [
-    {'ranking': 1, 'waiver': 0.5, 'background_score': 95},
-    {'ranking': 2, 'waiver': 0.4, 'background_score': 92},
+    {'priority_score': 1, 'waiver': 0.5, 'background_score': 95},
+    {'priority_score': 2, 'waiver': 0.4, 'background_score': 92},
     # ... more students
 ]
 
@@ -68,7 +68,7 @@ results = simulator.simulate(
 )
 
 print(f"Expected acceptances: {results['expected_acceptances']:.2f}")
-print(f"Mean ranking: {results['mean_ranking']:.2f}")
+print(f"Mean priority score: {results['mean_priority_score']:.2f}")
 ```
 
 ## Examples
@@ -89,7 +89,7 @@ This will demonstrate:
 
 The tool expects admissions data as a list of dictionaries with the following fields:
 
-- `ranking`: int - Student ranking (1 is best)
+- `ranking`: int - Student priority score (1 is best)
 - `waiver`: float - Tuition waiver as a percentage (0-1, where 0.5 = 50%)
 - `accepted`: bool - Whether the student accepted the offer
 - `background_score`: float - Optional background/qualification score
@@ -98,7 +98,7 @@ The tool expects admissions data as a list of dictionaries with the following fi
 Example:
 ```python
 {
-    'ranking': 1,
+    'priority_score': 1,
     'waiver': 0.5,
     'accepted': True,
     'background_score': 95,
@@ -114,7 +114,7 @@ Estimates acceptance probability using logistic regression.
 
 **Key Methods:**
 - `fit(admissions_data)`: Train the model on historical data
-- `predict_probability(ranking, waiver, background_score)`: Predict acceptance probability
+- `predict_probability(priority score, waiver, background_score)`: Predict acceptance probability
 - `estimate_acceptance_rates(students)`: Predict for multiple students
 
 ### ResamplingSimulator

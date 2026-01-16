@@ -12,16 +12,16 @@ class TestWaiverProbabilityEstimator(unittest.TestCase):
     def setUp(self):
         """Set up test data."""
         self.sample_data = [
-            {'ranking': 1, 'waiver': 0.5, 'accepted': True, 'background_score': 95},
-            {'ranking': 2, 'waiver': 0.4, 'accepted': True, 'background_score': 92},
-            {'ranking': 3, 'waiver': 0.3, 'accepted': True, 'background_score': 88},
-            {'ranking': 4, 'waiver': 0.5, 'accepted': True, 'background_score': 85},
-            {'ranking': 5, 'waiver': 0.2, 'accepted': False, 'background_score': 82},
-            {'ranking': 6, 'waiver': 0.6, 'accepted': True, 'background_score': 80},
-            {'ranking': 7, 'waiver': 0.3, 'accepted': False, 'background_score': 78},
-            {'ranking': 8, 'waiver': 0.4, 'accepted': True, 'background_score': 75},
-            {'ranking': 9, 'waiver': 0.1, 'accepted': False, 'background_score': 72},
-            {'ranking': 10, 'waiver': 0.5, 'accepted': True, 'background_score': 70},
+            {'priority_score': 95.5, 'waiver': 0.5, 'accepted': True, 'background_score': 95},
+            {'priority_score': 92.3, 'waiver': 0.4, 'accepted': True, 'background_score': 92},
+            {'priority_score': 88.7, 'waiver': 0.3, 'accepted': True, 'background_score': 88},
+            {'priority_score': 85.2, 'waiver': 0.5, 'accepted': True, 'background_score': 85},
+            {'priority_score': 82.1, 'waiver': 0.2, 'accepted': False, 'background_score': 82},
+            {'priority_score': 80.4, 'waiver': 0.6, 'accepted': True, 'background_score': 80},
+            {'priority_score': 78.9, 'waiver': 0.3, 'accepted': False, 'background_score': 78},
+            {'priority_score': 75.6, 'waiver': 0.4, 'accepted': True, 'background_score': 75},
+            {'priority_score': 72.3, 'waiver': 0.1, 'accepted': False, 'background_score': 72},
+            {'priority_score': 70.8, 'waiver': 0.5, 'accepted': True, 'background_score': 70},
         ]
         
     def test_initialization(self):
@@ -51,7 +51,7 @@ class TestWaiverProbabilityEstimator(unittest.TestCase):
         estimator = WaiverProbabilityEstimator()
         estimator.fit(self.sample_data)
         
-        prob = estimator.predict_probability(ranking=3, waiver=0.5, background_score=90)
+        prob = estimator.predict_probability(priority_score=3, waiver=0.5, background_score=90)
         
         # Check that probability is between 0 and 1
         self.assertGreaterEqual(prob, 0.0)
@@ -62,7 +62,7 @@ class TestWaiverProbabilityEstimator(unittest.TestCase):
         estimator = WaiverProbabilityEstimator()
         
         with self.assertRaises(RuntimeError):
-            estimator.predict_probability(ranking=1, waiver=0.5)
+            estimator.predict_probability(priority_score=1, waiver=0.5)
             
     def test_estimate_acceptance_rates(self):
         """Test estimating rates for multiple students."""
@@ -70,8 +70,8 @@ class TestWaiverProbabilityEstimator(unittest.TestCase):
         estimator.fit(self.sample_data)
         
         students = [
-            {'ranking': 1, 'waiver': 0.5, 'background_score': 95},
-            {'ranking': 5, 'waiver': 0.3, 'background_score': 80},
+            {'priority_score': 95.5, 'waiver': 0.5, 'background_score': 95},
+            {'priority_score': 82.1, 'waiver': 0.3, 'background_score': 80},
         ]
         
         results = estimator.estimate_acceptance_rates(students)
@@ -87,14 +87,14 @@ class TestWaiverProbabilityEstimator(unittest.TestCase):
         
         # Test various scenarios
         test_cases = [
-            (1, 0.0, 0),
-            (1, 1.0, 100),
-            (10, 0.5, 50),
-            (5, 0.3, 75),
+            (95.5, 0.0, 0),
+            (95.5, 1.0, 100),
+            (70.8, 0.5, 50),
+            (82.1, 0.3, 75),
         ]
         
-        for ranking, waiver, background in test_cases:
-            prob = estimator.predict_probability(ranking, waiver, background)
+        for priority_score, waiver, background in test_cases:
+            prob = estimator.predict_probability(priority_score, waiver, background)
             self.assertGreaterEqual(prob, 0.0)
             self.assertLessEqual(prob, 1.0)
 

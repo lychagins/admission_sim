@@ -36,7 +36,7 @@ class WaiverProbabilityEstimator:
         
         Args:
             admissions_data: List of dictionaries containing:
-                - 'ranking': int, student ranking (1 is best)
+                - 'priority_score': float, student priority score (higher is better)
                 - 'waiver': float, tuition waiver amount (0-1 representing percentage)
                 - 'accepted': bool, whether student accepted the offer
                 - 'background_score': float, optional background score
@@ -50,10 +50,10 @@ class WaiverProbabilityEstimator:
         
         for record in admissions_data:
             features = [
-                record.get('ranking', 0),
+                record.get('priority_score', 0),
                 record.get('waiver', 0),
                 record.get('background_score', 0),
-                record.get('waiver', 0) * record.get('ranking', 0)  # interaction term
+                record.get('waiver', 0) * record.get('priority_score', 0)  # interaction term
             ]
             X.append(features)
             y.append(1 if record.get('accepted', False) else 0)
@@ -97,13 +97,13 @@ class WaiverProbabilityEstimator:
             self.intercept -= learning_rate * intercept_gradient
             self.coefficients -= learning_rate * coef_gradient
         
-    def predict_probability(self, ranking: int, waiver: float, 
+    def predict_probability(self, priority_score: float, waiver: float, 
                           background_score: float = 0) -> float:
         """
         Predict the probability that a student accepts an offer.
         
         Args:
-            ranking: Student ranking (1 is best)
+            priority_score: Student priority score (higher is better)
             waiver: Tuition waiver amount (0-1 representing percentage)
             background_score: Optional background score
             
@@ -115,10 +115,10 @@ class WaiverProbabilityEstimator:
         
         # Create feature vector
         features = np.array([
-            ranking,
+            priority_score,
             waiver,
             background_score,
-            waiver * ranking
+            waiver * priority_score
         ])
         
         # Compute probability
@@ -133,7 +133,7 @@ class WaiverProbabilityEstimator:
         
         Args:
             students: List of dictionaries containing student info:
-                - 'ranking': int, student ranking
+                - 'priority_score': float, student priority score
                 - 'waiver': float, tuition waiver amount
                 - 'background_score': float, optional
                 
@@ -144,7 +144,7 @@ class WaiverProbabilityEstimator:
         for student in students:
             result = student.copy()
             result['acceptance_probability'] = self.predict_probability(
-                ranking=student.get('ranking', 0),
+                priority_score=student.get('priority_score', 0),
                 waiver=student.get('waiver', 0),
                 background_score=student.get('background_score', 0)
             )

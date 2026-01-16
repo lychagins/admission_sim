@@ -13,16 +13,16 @@ class TestResamplingSimulator(unittest.TestCase):
     def setUp(self):
         """Set up test data."""
         self.sample_data = [
-            {'ranking': 1, 'waiver': 0.5, 'accepted': True, 'background_score': 95},
-            {'ranking': 2, 'waiver': 0.4, 'accepted': True, 'background_score': 92},
-            {'ranking': 3, 'waiver': 0.3, 'accepted': True, 'background_score': 88},
-            {'ranking': 4, 'waiver': 0.5, 'accepted': True, 'background_score': 85},
-            {'ranking': 5, 'waiver': 0.2, 'accepted': False, 'background_score': 82},
-            {'ranking': 6, 'waiver': 0.6, 'accepted': True, 'background_score': 80},
-            {'ranking': 7, 'waiver': 0.3, 'accepted': False, 'background_score': 78},
-            {'ranking': 8, 'waiver': 0.4, 'accepted': True, 'background_score': 75},
-            {'ranking': 9, 'waiver': 0.1, 'accepted': False, 'background_score': 72},
-            {'ranking': 10, 'waiver': 0.5, 'accepted': True, 'background_score': 70},
+            {'priority_score': 95.5, 'waiver': 0.5, 'accepted': True, 'background_score': 95},
+            {'priority_score': 92.3, 'waiver': 0.4, 'accepted': True, 'background_score': 92},
+            {'priority_score': 88.7, 'waiver': 0.3, 'accepted': True, 'background_score': 88},
+            {'priority_score': 85.2, 'waiver': 0.5, 'accepted': True, 'background_score': 85},
+            {'priority_score': 82.1, 'waiver': 0.2, 'accepted': False, 'background_score': 82},
+            {'priority_score': 80.4, 'waiver': 0.6, 'accepted': True, 'background_score': 80},
+            {'priority_score': 78.9, 'waiver': 0.3, 'accepted': False, 'background_score': 78},
+            {'priority_score': 75.6, 'waiver': 0.4, 'accepted': True, 'background_score': 75},
+            {'priority_score': 72.3, 'waiver': 0.1, 'accepted': False, 'background_score': 72},
+            {'priority_score': 70.8, 'waiver': 0.5, 'accepted': True, 'background_score': 70},
         ]
         
     def test_initialization(self):
@@ -40,9 +40,9 @@ class TestResamplingSimulator(unittest.TestCase):
         simulator = ResamplingSimulator(self.sample_data)
         
         waiver_allocation = [
-            {'ranking': 1, 'waiver': 0.5, 'background_score': 95},
-            {'ranking': 2, 'waiver': 0.4, 'background_score': 92},
-            {'ranking': 3, 'waiver': 0.3, 'background_score': 88},
+            {'priority_score': 95.5, 'waiver': 0.5, 'background_score': 95},
+            {'priority_score': 92.3, 'waiver': 0.4, 'background_score': 92},
+            {'priority_score': 88.7, 'waiver': 0.3, 'background_score': 88},
         ]
         
         results = simulator.simulate(
@@ -57,7 +57,7 @@ class TestResamplingSimulator(unittest.TestCase):
         self.assertIn('std_acceptances', results)
         self.assertIn('acceptance_distribution', results)
         self.assertIn('student_probabilities', results)
-        self.assertIn('mean_ranking', results)
+        self.assertIn('mean_priority_score', results)
         
     def test_simulate_with_model(self):
         """Test simulation with fitted probability model."""
@@ -67,8 +67,8 @@ class TestResamplingSimulator(unittest.TestCase):
         simulator = ResamplingSimulator(self.sample_data, estimator)
         
         waiver_allocation = [
-            {'ranking': 1, 'waiver': 0.5, 'background_score': 95},
-            {'ranking': 2, 'waiver': 0.4, 'background_score': 92},
+            {'priority_score': 95.5, 'waiver': 0.5, 'background_score': 95},
+            {'priority_score': 92.3, 'waiver': 0.4, 'background_score': 92},
         ]
         
         results = simulator.simulate(
@@ -85,7 +85,7 @@ class TestResamplingSimulator(unittest.TestCase):
         simulator = ResamplingSimulator(self.sample_data)
         
         waiver_allocation = [
-            {'ranking': 1, 'waiver': 0.5, 'background_score': 95},
+            {'priority_score': 95.5, 'waiver': 0.5, 'background_score': 95},
         ]
         
         results1 = simulator.simulate(
@@ -109,13 +109,13 @@ class TestResamplingSimulator(unittest.TestCase):
         simulator = ResamplingSimulator(self.sample_data)
         
         similar = simulator._find_similar_students(
-            ranking=3,
+            priority_score=88.7,
             waiver=0.3,
-            ranking_window=2,
+            priority_score_window=5.0,
             waiver_window=0.1
         )
         
-        # Should find students with rankings 1-5 and waivers 0.2-0.4
+        # Should find students with priority scores within 5 points and waivers within 0.1
         self.assertGreater(len(similar), 0)
         
     def test_optimize_waiver_allocation(self):
@@ -142,8 +142,8 @@ class TestResamplingSimulator(unittest.TestCase):
         simulator = ResamplingSimulator(self.sample_data)
         
         waiver_allocation = [
-            {'ranking': 1, 'waiver': 0.5, 'background_score': 95},
-            {'ranking': 2, 'waiver': 0.4, 'background_score': 92},
+            {'priority_score': 95.5, 'waiver': 0.5, 'background_score': 95},
+            {'priority_score': 92.3, 'waiver': 0.4, 'background_score': 92},
         ]
         
         results = simulator.simulate(

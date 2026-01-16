@@ -14,9 +14,9 @@ class TestDataUtils(unittest.TestCase):
     def setUp(self):
         """Set up test data."""
         self.sample_data = [
-            {'ranking': 1, 'waiver': 0.5, 'accepted': True, 'background_score': 95, 'student_id': 'S001'},
-            {'ranking': 2, 'waiver': 0.4, 'accepted': True, 'background_score': 92, 'student_id': 'S002'},
-            {'ranking': 3, 'waiver': 0.3, 'accepted': False, 'background_score': 88, 'student_id': 'S003'},
+            {'priority_score': 95.5, 'waiver': 0.5, 'accepted': True, 'background_score': 95, 'student_id': 'S001'},
+            {'priority_score': 92.3, 'waiver': 0.4, 'accepted': True, 'background_score': 92, 'student_id': 'S002'},
+            {'priority_score': 88.7, 'waiver': 0.3, 'accepted': False, 'background_score': 88, 'student_id': 'S003'},
         ]
         
         # Create temporary directory for test files
@@ -42,7 +42,7 @@ class TestDataUtils(unittest.TestCase):
         
         # Verify loaded data matches original
         self.assertEqual(len(loaded_data), len(self.sample_data))
-        self.assertEqual(loaded_data[0]['ranking'], 1)
+        self.assertEqual(loaded_data[0]['priority_score'], 95.5)
         self.assertEqual(loaded_data[0]['waiver'], 0.5)
         self.assertTrue(loaded_data[0]['accepted'])
         self.assertEqual(loaded_data[0]['student_id'], 'S001')
@@ -66,7 +66,7 @@ class TestDataUtils(unittest.TestCase):
         # Load and verify
         data = load_admissions_data(filepath)
         self.assertGreater(len(data), 0)
-        self.assertIn('ranking', data[0])
+        self.assertIn('priority_score', data[0])
         self.assertIn('waiver', data[0])
         self.assertIn('accepted', data[0])
         
@@ -78,7 +78,7 @@ class TestDataUtils(unittest.TestCase):
         loaded_data = load_admissions_data(filepath)
         
         # Check types
-        self.assertIsInstance(loaded_data[0]['ranking'], int)
+        self.assertIsInstance(loaded_data[0]['priority_score'], float)
         self.assertIsInstance(loaded_data[0]['waiver'], float)
         self.assertIsInstance(loaded_data[0]['accepted'], bool)
         self.assertIsInstance(loaded_data[0]['background_score'], float)

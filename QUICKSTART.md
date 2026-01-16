@@ -22,7 +22,7 @@ The tool expects historical admissions data in the following format:
 ```python
 admissions_data = [
     {
-        'ranking': 1,              # Student ranking (1 is best)
+        'priority_score': 1,              # Student priority score (1 is best)
         'waiver': 0.5,            # Tuition waiver (0-1, where 0.5 = 50%)
         'accepted': True,         # Whether student accepted
         'background_score': 95,   # Optional: background/qualification score
@@ -43,7 +43,7 @@ estimator.fit(admissions_data)
 
 # Predict for a new student
 probability = estimator.predict_probability(
-    ranking=3,
+    priority_score=3,
     waiver=0.5,
     background_score=90
 )
@@ -60,9 +60,9 @@ simulator = ResamplingSimulator(admissions_data, estimator)
 
 # Define your waiver allocation strategy
 waiver_allocation = [
-    {'ranking': 1, 'waiver': 0.5, 'background_score': 95},
-    {'ranking': 2, 'waiver': 0.4, 'background_score': 92},
-    {'ranking': 3, 'waiver': 0.3, 'background_score': 88},
+    {'priority_score': 1, 'waiver': 0.5, 'background_score': 95},
+    {'priority_score': 2, 'waiver': 0.4, 'background_score': 92},
+    {'priority_score': 3, 'waiver': 0.3, 'background_score': 88},
     # ... more students
 ]
 
@@ -75,7 +75,7 @@ results = simulator.simulate(
 
 print(f"Expected acceptances: {results['expected_acceptances']:.2f}")
 print(f"Standard deviation: {results['std_acceptances']:.2f}")
-print(f"Mean ranking: {results['mean_ranking']:.2f}")
+print(f"Mean priority score: {results['mean_priority_score']:.2f}")
 ```
 
 ### 4. Optimize Waiver Allocation
@@ -165,10 +165,10 @@ print(f"10th percentile: {results['percentiles']['10th']:.0f}")
 ```python
 strategies = [
     # Strategy 1: Equal waivers
-    [{'ranking': i, 'waiver': 0.3} for i in range(1, 11)],
+    [{'priority_score': 100 - i*5, 'waiver': 0.3} for i in range(10)],
     
     # Strategy 2: Higher waivers for top students
-    [{'ranking': i, 'waiver': 0.5 if i <= 5 else 0.2} for i in range(1, 11)],
+    [{'priority_score': 100 - i*5, 'waiver': 0.5 if i < 5 else 0.2} for i in range(10)],
 ]
 
 for i, strategy in enumerate(strategies):
