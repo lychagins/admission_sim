@@ -27,8 +27,7 @@ class TestWaiverProbabilityEstimator(unittest.TestCase):
     def test_initialization(self):
         """Test that estimator initializes correctly."""
         estimator = WaiverProbabilityEstimator()
-        self.assertIsNone(estimator.coefficients)
-        self.assertIsNone(estimator.intercept)
+        self.assertIsNone(estimator.model)
         self.assertFalse(estimator.is_fitted)
         
     def test_fit(self):
@@ -37,8 +36,7 @@ class TestWaiverProbabilityEstimator(unittest.TestCase):
         estimator.fit(self.sample_data)
         
         self.assertTrue(estimator.is_fitted)
-        self.assertIsNotNone(estimator.coefficients)
-        self.assertIsNotNone(estimator.intercept)
+        self.assertIsNotNone(estimator.model)
         
     def test_fit_empty_data(self):
         """Test that fitting with empty data raises error."""

@@ -6,14 +6,9 @@ the probability of acceptance based on tuition waiver amounts and student charac
 """
 
 import numpy as np
+import statsmodels.api as sm
 from typing import Dict, List, Optional, Tuple
 import warnings
-
-
-# Constants for logistic regression
-# Clip range to prevent overflow in exp() function
-SIGMOID_CLIP_MIN = -500
-SIGMOID_CLIP_MAX = 500
 
 
 class WaiverProbabilityEstimator:
@@ -26,8 +21,7 @@ class WaiverProbabilityEstimator:
     
     def __init__(self):
         """Initialize the estimator."""
-        self.coefficients = None
-        self.intercept = None
+        self.model = None
         self.is_fitted = False
         
     def fit(self, admissions_data: List[Dict]) -> None:
@@ -61,41 +55,15 @@ class WaiverProbabilityEstimator:
         X = np.array(X)
         y = np.array(y)
         
-        # Simple gradient descent for logistic regression
-        self._fit_logistic_regression(X, y)
+        # Add constant term for intercept
+        X_with_const = sm.add_constant(X)
+        
+        # Fit logistic regression using statsmodels
+        # Suppress convergence warnings for small datasets
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', category=Warning)
+            self.model = sm.Logit(y, X_with_const).fit(disp=False)
         self.is_fitted = True
-        
-    def _fit_logistic_regression(self, X: np.ndarray, y: np.ndarray, 
-                                  learning_rate: float = 0.01, 
-                                  iterations: int = 1000) -> None:
-        """
-        Fit logistic regression using gradient descent.
-        
-        Args:
-            X: Feature matrix (without intercept column)
-            y: Target vector
-            learning_rate: Learning rate for gradient descent
-            iterations: Number of iterations
-        """
-        n_samples, n_features = X.shape
-        
-        # Initialize intercept and coefficients separately
-        self.intercept = 0.0
-        self.coefficients = np.zeros(n_features)
-        
-        for _ in range(iterations):
-            # Sigmoid function
-            z = self.intercept + np.dot(X, self.coefficients)
-            predictions = 1 / (1 + np.exp(-np.clip(z, SIGMOID_CLIP_MIN, SIGMOID_CLIP_MAX)))
-            
-            # Gradients
-            error = predictions - y
-            intercept_gradient = np.mean(error)
-            coef_gradient = np.dot(X.T, error) / n_samples
-            
-            # Update parameters
-            self.intercept -= learning_rate * intercept_gradient
-            self.coefficients -= learning_rate * coef_gradient
         
     def predict_probability(self, priority_score: float, waiver: float, 
                           background_score: float = 0) -> float:
@@ -113,17 +81,19 @@ class WaiverProbabilityEstimator:
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before making predictions")
         
-        # Create feature vector
-        features = np.array([
+        # Create feature vector (as 2D array for compatibility with statsmodels)
+        features = np.array([[
             priority_score,
             waiver,
             background_score,
             waiver * priority_score
-        ])
+        ]])
         
-        # Compute probability
-        z = self.intercept + np.dot(self.coefficients, features)
-        probability = 1 / (1 + np.exp(-np.clip(z, SIGMOID_CLIP_MIN, SIGMOID_CLIP_MAX)))
+        # Add constant term for intercept
+        features_with_const = sm.add_constant(features, has_constant='add')
+        
+        # Predict probability using the fitted model
+        probability = self.model.predict(features_with_const)[0]
         
         return float(probability)
     
