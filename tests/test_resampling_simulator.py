@@ -13,16 +13,16 @@ class TestResamplingSimulator(unittest.TestCase):
     def setUp(self):
         """Set up test data."""
         self.sample_data = [
-            {'priority_score': 95.5, 'waiver': 0.5, 'accepted': True, 'background_score': 95},
-            {'priority_score': 92.3, 'waiver': 0.4, 'accepted': True, 'background_score': 92},
-            {'priority_score': 88.7, 'waiver': 0.3, 'accepted': True, 'background_score': 88},
-            {'priority_score': 85.2, 'waiver': 0.5, 'accepted': True, 'background_score': 85},
-            {'priority_score': 82.1, 'waiver': 0.2, 'accepted': False, 'background_score': 82},
-            {'priority_score': 80.4, 'waiver': 0.6, 'accepted': True, 'background_score': 80},
-            {'priority_score': 78.9, 'waiver': 0.3, 'accepted': False, 'background_score': 78},
-            {'priority_score': 75.6, 'waiver': 0.4, 'accepted': True, 'background_score': 75},
-            {'priority_score': 72.3, 'waiver': 0.1, 'accepted': False, 'background_score': 72},
-            {'priority_score': 70.8, 'waiver': 0.5, 'accepted': True, 'background_score': 70},
+            {'priority_score': 95.5, 'waiver': 0.5, 'accepted': 1, 'background_score': 95},
+            {'priority_score': 92.3, 'waiver': 0.4, 'accepted': 1, 'background_score': 92},
+            {'priority_score': 88.7, 'waiver': 0.3, 'accepted': 1, 'background_score': 88},
+            {'priority_score': 85.2, 'waiver': 0.5, 'accepted': 1, 'background_score': 85},
+            {'priority_score': 82.1, 'waiver': 0.2, 'accepted': 0, 'background_score': 82},
+            {'priority_score': 80.4, 'waiver': 0.6, 'accepted': 1, 'background_score': 80},
+            {'priority_score': 78.9, 'waiver': 0.3, 'accepted': 0, 'background_score': 78},
+            {'priority_score': 75.6, 'waiver': 0.4, 'accepted': 1, 'background_score': 75},
+            {'priority_score': 72.3, 'waiver': 0.1, 'accepted': 0, 'background_score': 72},
+            {'priority_score': 70.8, 'waiver': 0.5, 'accepted': 1, 'background_score': 70},
         ]
         
     def test_initialization(self):

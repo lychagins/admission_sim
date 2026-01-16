@@ -24,7 +24,7 @@ admissions_data = [
     {
         'priority_score': 1,              # Student priority score (1 is best)
         'waiver': 0.5,            # Tuition waiver (0-1, where 0.5 = 50%)
-        'accepted': True,         # Whether student accepted
+        'accepted': 1,         # Whether student accepted
         'background_score': 95,   # Optional: background/qualification score
         'student_id': 'S001'      # Optional: student identifier
     },

@@ -34,7 +34,7 @@ class ResamplingSimulator:
             admissions_data: List of dictionaries containing past admissions:
                 - 'priority_score': float, student priority score (higher is better)
                 - 'waiver': float, tuition waiver percentage
-                - 'accepted': bool, acceptance decision
+                - 'accepted': int, acceptance decision (1=yes, 0=no)
                 - 'background_score': float, optional
                 - 'student_id': str/int, student identifier
             waiver_probability_model: Optional fitted WaiverProbabilityEstimator

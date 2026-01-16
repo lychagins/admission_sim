@@ -38,7 +38,7 @@ class WaiverProbabilityEstimator:
             admissions_data: List of dictionaries containing:
                 - 'priority_score': float, student priority score (higher is better)
                 - 'waiver': float, tuition waiver amount (0-1 representing percentage)
-                - 'accepted': bool, whether student accepted the offer
+                - 'accepted': int, whether student accepted the offer (1=yes, 0=no)
                 - 'background_score': float, optional background score
         """
         if not admissions_data:
