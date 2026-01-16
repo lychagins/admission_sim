@@ -11,6 +11,12 @@ from collections import Counter
 import warnings
 
 
+# Constants for optimization algorithm
+WAIVER_OPTIMIZATION_BASE_MULTIPLIER = 1.0
+WAIVER_OPTIMIZATION_RANGE_DIVISOR = 2.0
+TARGET_ACCEPTANCE_TOLERANCE = 2.0
+
+
 class ResamplingSimulator:
     """
     Simulates student body composition using resampling of past admission data.
@@ -233,7 +239,11 @@ class ResamplingSimulator:
         allocation = []
         for rank in range(1, num_offers + 1):
             # Give slightly more waiver to top students
-            waiver_multiplier = 1.0 + (num_offers - rank) / (num_offers * 2)
+            # Uses a linear decay based on ranking
+            waiver_multiplier = (
+                WAIVER_OPTIMIZATION_BASE_MULTIPLIER + 
+                (num_offers - rank) / (num_offers * WAIVER_OPTIMIZATION_RANGE_DIVISOR)
+            )
             waiver = min(1.0, waiver_per_student * waiver_multiplier)
             
             allocation.append({
@@ -254,5 +264,5 @@ class ResamplingSimulator:
         return {
             'allocation': allocation,
             'simulation_results': results,
-            'meets_target': abs(results['expected_acceptances'] - target_acceptances) < 2
+            'meets_target': abs(results['expected_acceptances'] - target_acceptances) < TARGET_ACCEPTANCE_TOLERANCE
         }

@@ -10,6 +10,12 @@ from typing import Dict, List, Optional, Tuple
 import warnings
 
 
+# Constants for logistic regression
+# Clip range to prevent overflow in exp() function
+SIGMOID_CLIP_MIN = -500
+SIGMOID_CLIP_MAX = 500
+
+
 class WaiverProbabilityEstimator:
     """
     Estimates the probability that a student accepts an offer based on tuition waivers.
@@ -44,7 +50,6 @@ class WaiverProbabilityEstimator:
         
         for record in admissions_data:
             features = [
-                1.0,  # intercept term
                 record.get('ranking', 0),
                 record.get('waiver', 0),
                 record.get('background_score', 0),
@@ -67,27 +72,30 @@ class WaiverProbabilityEstimator:
         Fit logistic regression using gradient descent.
         
         Args:
-            X: Feature matrix
+            X: Feature matrix (without intercept column)
             y: Target vector
             learning_rate: Learning rate for gradient descent
             iterations: Number of iterations
         """
         n_samples, n_features = X.shape
+        
+        # Initialize intercept and coefficients separately
+        self.intercept = 0.0
         self.coefficients = np.zeros(n_features)
         
         for _ in range(iterations):
             # Sigmoid function
-            z = np.dot(X, self.coefficients)
-            predictions = 1 / (1 + np.exp(-np.clip(z, -500, 500)))  # clip to prevent overflow
+            z = self.intercept + np.dot(X, self.coefficients)
+            predictions = 1 / (1 + np.exp(-np.clip(z, SIGMOID_CLIP_MIN, SIGMOID_CLIP_MAX)))
             
-            # Gradient
-            gradient = np.dot(X.T, (predictions - y)) / n_samples
+            # Gradients
+            error = predictions - y
+            intercept_gradient = np.mean(error)
+            coef_gradient = np.dot(X.T, error) / n_samples
             
-            # Update coefficients
-            self.coefficients -= learning_rate * gradient
-        
-        self.intercept = self.coefficients[0]
-        self.coefficients = self.coefficients[1:]
+            # Update parameters
+            self.intercept -= learning_rate * intercept_gradient
+            self.coefficients -= learning_rate * coef_gradient
         
     def predict_probability(self, ranking: int, waiver: float, 
                           background_score: float = 0) -> float:
@@ -115,7 +123,7 @@ class WaiverProbabilityEstimator:
         
         # Compute probability
         z = self.intercept + np.dot(self.coefficients, features)
-        probability = 1 / (1 + np.exp(-np.clip(z, -500, 500)))
+        probability = 1 / (1 + np.exp(-np.clip(z, SIGMOID_CLIP_MIN, SIGMOID_CLIP_MAX)))
         
         return float(probability)
     
