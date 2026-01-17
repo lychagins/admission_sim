@@ -48,24 +48,6 @@ def example_waiver_probability():
     print("\nFitting model with historical admissions data...")
     estimator.fit(admissions_data)
     print("Model fitted successfully!")
-    
-    # Predict for new students
-    print("\nPredicting acceptance probabilities for new students:")
-    print("-" * 60)
-    
-    new_students = [
-        {'priority_score': 88.7, 'waiver': 0.5, 'background_score': 90},
-        {'priority_score': 78.9, 'waiver': 0.3, 'background_score': 75},
-        {'priority_score': 70.8, 'waiver': 0.6, 'background_score': 70},
-    ]
-    
-    results = estimator.estimate_acceptance_rates(new_students)
-    
-    for student in results:
-        print(f"Priority Score: {student['priority_score']}, Waiver: {student['waiver']*100:.0f}%, "
-              f"Background Score: {student['background_score']}")
-        print(f"  → Acceptance Probability: {student['acceptance_probability']:.2%}")
-    
     return estimator
 
 
