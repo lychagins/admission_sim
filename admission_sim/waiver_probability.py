@@ -47,7 +47,6 @@ class WaiverProbabilityEstimator:
                 record.get('priority_score', 0),
                 record.get('waiver', 0),
                 record.get('background_score', 0),
-                record.get('waiver', 0) * record.get('priority_score', 0)  # interaction term
             ]
             X.append(features)
             y.append(1 if record.get('accepted', False) else 0)
@@ -57,14 +56,29 @@ class WaiverProbabilityEstimator:
         
         # Add constant term for intercept
         X_with_const = sm.add_constant(X)
-        
-        # Fit logistic regression using statsmodels
-        # Suppress convergence warnings for small datasets
+
+        # Fit logistic regression using statsmodels (standard MLE only — no regularization)
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore', category=Warning)
-            self.model = sm.Logit(y, X_with_const).fit(disp=False)
+            # Increase maximum iterations to improve convergence for small/ill-conditioned datasets
+            self.model = sm.Logit(y, X_with_const).fit(disp=True, maxiter=1000)
+
+        # After fitting, detect whether the fitted model perfectly predicts the
+        # training labels — this indicates complete separation or a degenerate fit.
+        try:
+            probs = self.model.predict(X_with_const)
+            preds = (probs >= 0.5).astype(int)
+            if np.array_equal(preds, y):
+                raise RuntimeError(
+                    "Complete separation detected: fitted model perfectly predicts the training labels; "
+                    "logistic regression MLE is not reliable. Provide more data or remove perfect separators."
+                )
+        except Exception:
+            # If prediction fails for any reason, surface as a runtime error
+            raise
+
         self.is_fitted = True
-        
+
         # Print parameter estimates table
         self._print_parameter_table()
     
@@ -74,8 +88,7 @@ class WaiverProbabilityEstimator:
             return
         
         # Feature names
-        feature_names = ['Intercept', 'Priority Score', 'Waiver', 'Background Score', 
-                        'Waiver × Priority Score']
+        feature_names = ['Intercept', 'Priority Score', 'Waiver', 'Background Score']
         
         # Get parameter estimates and standard errors
         params = self.model.params
@@ -135,7 +148,6 @@ class WaiverProbabilityEstimator:
             priority_score,
             waiver,
             background_score,
-            waiver * priority_score
         ]])
         
         # Add constant term for intercept

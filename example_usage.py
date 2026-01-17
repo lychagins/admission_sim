@@ -29,6 +29,8 @@ def create_sample_data():
         {'priority_score': 63.2, 'waiver': 0.3, 'accepted': 0, 'background_score': 63, 'student_id': 'S013'},
         {'priority_score': 60.7, 'waiver': 0.4, 'accepted': 1, 'background_score': 60, 'student_id': 'S014'},
         {'priority_score': 58.1, 'waiver': 0.1, 'accepted': 0, 'background_score': 58, 'student_id': 'S015'},
+        {'priority_score': 84.0, 'waiver': 0.4, 'accepted': 0, 'background_score': 84, 'student_id': 'S016'},
+        {'priority_score': 60.0, 'waiver': 0.1, 'accepted': 1, 'background_score': 60, 'student_id': 'S017'},
     ]
     return admissions_data
 

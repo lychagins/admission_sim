@@ -22,6 +22,8 @@ class TestWaiverProbabilityEstimator(unittest.TestCase):
             {'priority_score': 75.6, 'waiver': 0.4, 'accepted': 1, 'background_score': 75},
             {'priority_score': 72.3, 'waiver': 0.1, 'accepted': 0, 'background_score': 72},
             {'priority_score': 70.8, 'waiver': 0.5, 'accepted': 1, 'background_score': 70},
+            {'priority_score': 84.0, 'waiver': 0.4, 'accepted': 0, 'background_score': 84},
+            {'priority_score': 60.0, 'waiver': 0.1, 'accepted': 1, 'background_score': 60},
         ]
         
     def test_initialization(self):
