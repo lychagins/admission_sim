@@ -13,18 +13,15 @@ from collections import Counter
 import warnings
 
 
-# Constants for optimization algorithm
-WAIVER_OPTIMIZATION_BASE_MULTIPLIER = 1.0
-WAIVER_OPTIMIZATION_RANGE_DIVISOR = 2.0
-TARGET_ACCEPTANCE_TOLERANCE = 2.0
+# (No module-level constants required)
 
 
 class ResamplingSimulator:
     """
-    Simulates student body composition using resampling of past admission data.
-    
-    Uses bootstrap resampling and Monte Carlo simulation to predict which students
-    will accept offers given a specific waiver allocation strategy.
+    Simulates student body composition using Monte Carlo sampling.
+
+    The simulator queries a fitted probability model for per-student acceptance
+    probabilities and uses those probabilities in repeated Monte Carlo draws.
     """
     
     def __init__(self, admissions_data: List[Dict], 

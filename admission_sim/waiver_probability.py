@@ -57,10 +57,10 @@ class WaiverProbabilityEstimator:
         # Add constant term for intercept
         X_with_const = sm.add_constant(X)
 
-        # Fit logistic regression using statsmodels (standard MLE only — no regularization)
+        # Fit logistic regression using statsmodels
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore', category=Warning)
-            # Increase maximum iterations to improve convergence for small/ill-conditioned datasets
+            # Increase max iterations to help convergence on small datasets
             self.model = sm.Logit(y, X_with_const).fit(disp=True, maxiter=1000)
 
         # After fitting, detect whether the fitted model perfectly predicts the
