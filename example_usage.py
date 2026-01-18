@@ -130,22 +130,7 @@ def example_optimization():
     print("  - Target acceptances: 10 students")
     print("\nOptimizing...")
     
-    optimization_result = simulator.optimize_waiver_allocation(
-        num_offers=15,
-        total_waiver_budget=5.0,
-        target_acceptances=10,
-        num_simulations=1000
-    )
-    
-    print("\nOptimized Allocation:")
-    print("-" * 60)
-    for student in optimization_result['allocation'][:5]:  # Show first 5
-        print(f"Priority Score {student['priority_score']}: {student['waiver']*100:.1f}% waiver")
-    print("  ...")
-    
-    results = optimization_result['simulation_results']
-    print(f"\nExpected acceptances: {results['expected_acceptances']:.2f}")
-    print(f"Meets target: {optimization_result['meets_target']}")
+    # Optimization example removed — simulator focuses on simulation.
 
 
 def main():
@@ -161,8 +146,6 @@ def main():
     # Example 2: Resampling Simulation
     example_resampling_simulation(estimator)
     
-    # Example 3: Optimization
-    example_optimization()
     
     print("\n" + "=" * 60)
     print("Examples completed successfully!")

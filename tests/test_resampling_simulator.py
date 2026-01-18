@@ -111,24 +111,7 @@ class TestResamplingSimulator(unittest.TestCase):
         
     # Removed test_find_similar_students: simulator now requires model-based probabilities
         
-    def test_optimize_waiver_allocation(self):
-        """Test waiver allocation optimization."""
-        estimator = WaiverProbabilityEstimator()
-        estimator.fit(self.sample_data)
-        
-        simulator = ResamplingSimulator(self.sample_data, estimator)
-        
-        result = simulator.optimize_waiver_allocation(
-            num_offers=5,
-            total_waiver_budget=2.0,
-            target_acceptances=3,
-            num_simulations=100
-        )
-        
-        self.assertIn('allocation', result)
-        self.assertIn('simulation_results', result)
-        self.assertIn('meets_target', result)
-        self.assertEqual(len(result['allocation']), 5)
+    # Removed optimization test: optimization API was removed from simulator
         
     def test_percentiles_in_results(self):
         """Test that simulation results include percentile information."""
