@@ -82,18 +82,25 @@ print(f"Mean priority score: {results['mean_priority_score']:.2f}")
 
 ## Working with CSV Files
 
-```python
-from admission_sim.data_utils import load_admissions_data, save_admissions_data
+The package no longer provides CSV helpers. Use `pandas` or your own
+I/O utilities to load and save admissions data.
 
-# Load data from CSV
-admissions_data = load_admissions_data('admissions_history.csv')
+```python
+import pandas as pd
+
+# Load data from CSV (returns a DataFrame)
+df = pd.read_csv('admissions_history.csv')
+
+# Convert to list-of-dicts if needed by the estimator/simulator
+admissions_data = df.to_dict(orient='records')
 
 # Use the data...
 estimator = WaiverProbabilityEstimator()
 estimator.fit(admissions_data)
 
 # Save results
-save_admissions_data(updated_data, 'admissions_updated.csv')
+updated_df = pd.DataFrame(admissions_data)
+updated_df.to_csv('admissions_updated.csv', index=False)
 ```
 
 ## Running Examples
@@ -121,8 +128,11 @@ python -m unittest discover tests -v
 ### Case 1: Predict Enrollment for Next Year
 
 ```python
+import pandas as pd
+
 # 1. Load historical data
-admissions_data = load_admissions_data('past_admissions.csv')
+df = pd.read_csv('past_admissions.csv')
+admissions_data = df.to_dict(orient='records')
 
 # 2. Train estimator
 estimator = WaiverProbabilityEstimator()
