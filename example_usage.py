@@ -1,9 +1,13 @@
 """
 Example usage of the admission simulation tool.
 
-This script demonstrates how to use both modules:
-1. WaiverProbabilityEstimator - for estimating acceptance probabilities
-2. ResamplingSimulator - for simulating student body composition
+This script demonstrates how to use the estimator and simulator:
+- `WaiverProbabilityEstimator` for estimating acceptance probabilities
+- `ResamplingSimulator` for simulating student body composition
+
+Note: The package does not include a built-in waiver-allocation optimizer. The
+`ResamplingSimulator` requires a fitted estimator (or compatible model) passed
+into its constructor and uses Monte Carlo sampling to simulate outcomes.
 """
 
 from admission_sim import WaiverProbabilityEstimator, ResamplingSimulator
@@ -108,29 +112,7 @@ def example_resampling_simulation(estimator):
         print(f"  {percentile}: {value:.1f}")
 
 
-def example_optimization():
-    """Demonstrate waiver allocation optimization."""
-    print("\n" + "=" * 60)
-    print("EXAMPLE 3: Waiver Allocation Optimization")
-    print("=" * 60)
-    
-    admissions_data = create_sample_data()
-    
-    # Create estimator and fit
-    estimator = WaiverProbabilityEstimator()
-    estimator.fit(admissions_data)
-    
-    # Create simulator
-    simulator = ResamplingSimulator(admissions_data, estimator)
-    
-    # Optimize allocation
-    print("\nFinding optimal waiver allocation:")
-    print("  - Making 15 offers")
-    print("  - Total waiver budget: 5.0 (500%)")
-    print("  - Target acceptances: 10 students")
-    print("\nOptimizing...")
-    
-    
+
 
 def main():
     """Run all examples."""

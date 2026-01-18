@@ -11,9 +11,11 @@ The tool provides two main modules:
    - Considers student priority score, waiver amount, and background scores
    - Provides individual acceptance probability predictions
 
-2. **Resampling Simulator**: Uses resampling of past admission data to predict the composition of student body
-   - Takes the number and size of tuition waivers as user input
-    - Uses Monte Carlo simulation with bootstrap resampling
+2. **Resampling Simulator**: Simulates enrollment outcomes given a waiver allocation
+    - Takes the number and size of tuition waivers as user input
+    - Requires a fitted `WaiverProbabilityEstimator` (or compatible model) to supply
+      per-student acceptance probabilities via `predict_probability(...)`
+    - Uses Monte Carlo simulation that queries the supplied model for each student
     - Predicts expected enrollment and student body composition
 
 Both modules use past admissions data including:
@@ -87,16 +89,16 @@ This will demonstrate:
 
 The tool expects admissions data as a list of dictionaries with the following fields:
 
-- `ranking`: int - Student priority score (1 is best)
-- `waiver`: float - Tuition waiver as a percentage (0-1, where 0.5 = 50%)
-- `accepted`: bool - Whether the student accepted the offer
+- `priority_score`: float - Student priority score (higher is better)
+- `waiver`: float - Tuition waiver as a proportion (0-1, where 0.5 = 50%)
+- `accepted`: bool or int - Whether the student accepted the offer (True/1 = accepted)
 - `background_score`: float - Optional background/qualification score
 - `student_id`: str/int - Optional student identifier
 
 Example:
 ```python
 {
-    'priority_score': 1,
+    'priority_score': 95.0,
     'waiver': 0.5,
     'accepted': True,
     'background_score': 95,
@@ -117,7 +119,10 @@ Estimates acceptance probability using logistic regression.
 
 ### ResamplingSimulator
 
-Simulates student body composition using Monte Carlo simulation.
+Simulates student body composition using Monte Carlo sampling. The simulator
+requires a fitted `WaiverProbabilityEstimator` (or compatible model) that implements
+`predict_probability(priority_score, waiver, background_score)` and exposes an
+`is_fitted` attribute set to `True` after `fit()`.
 
 **Key Methods:**
 - `simulate(num_offers, waiver_allocation, num_simulations)`: Run simulation
@@ -125,7 +130,9 @@ Simulates student body composition using Monte Carlo simulation.
 ## Use Cases
 
 1. **Predict Enrollment**: Estimate how many students will accept offers given a waiver strategy
-2. **Optimize Resources**: Find the best way to allocate limited waiver budget
+2. **Optimize Resources**: Find the best way to allocate limited waiver budget (note: the
+    package does not include a built-in optimizer; implement optimization externally
+    by calling the simulator and estimator)
 3. **Risk Analysis**: Understand the variability in enrollment outcomes
 4. **Strategic Planning**: Test different scenarios before making actual offers
 

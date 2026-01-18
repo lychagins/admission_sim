@@ -1,8 +1,10 @@
 """
-Module for using resampling of past admission data to predict the composition of student body.
+Module for simulating admission outcomes given a waiver allocation.
 
 This module takes the number and size of tuition waivers as user input and uses
-bootstrap resampling to predict the likely composition of the admitted student body.
+Monte Carlo sampling. It requires a fitted probability model to provide
+per-student acceptance probabilities (the simulator does not perform a
+bootstrap-resampling fallback).
 """
 
 import numpy as np

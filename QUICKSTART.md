@@ -113,7 +113,11 @@ This will demonstrate:
 - Fitting the probability estimator
 - Predicting acceptance probabilities
 - Simulating student body composition
-- Optimizing waiver allocation
+
+Note: The package no longer includes a built-in waiver allocation optimizer. If you
+need to search for optimal allocations, call the estimator and simulator from your
+own optimization routine (e.g., `scipy.optimize`, a simple grid search, or an
+evolutionary search).
 
 ## Running Tests
 
