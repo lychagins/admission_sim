@@ -16,7 +16,6 @@ from admission_sim import WaiverProbabilityEstimator, ResamplingSimulator
 def create_sample_data():
     """Create sample admissions data for demonstration."""
     # Sample historical admissions data
-    # In practice, this would be loaded from a CSV or database
     admissions_data = [
         {'priority_score': 95.5, 'waiver': 0.5, 'accepted': 1, 'background_score': 95, 'student_id': 'S001'},
         {'priority_score': 92.3, 'waiver': 0.4, 'accepted': 1, 'background_score': 92, 'student_id': 'S002'},
@@ -45,7 +44,6 @@ def example_waiver_probability():
     print("EXAMPLE 1: Waiver Probability Estimation")
     print("=" * 60)
     
-    # Create and fit the model
     estimator = WaiverProbabilityEstimator()
     admissions_data = create_sample_data()
     
@@ -61,11 +59,9 @@ def example_resampling_simulation(estimator):
     print("EXAMPLE 2: Resampling Simulation")
     print("=" * 60)
     
-    # Create simulator
     admissions_data = create_sample_data()
     simulator = ResamplingSimulator(admissions_data, estimator)
     
-    # Define waiver allocation strategy
     print("\nSimulating admissions with the following waiver allocation:")
     print("-" * 60)
     
@@ -85,7 +81,6 @@ def example_resampling_simulation(estimator):
     for student in waiver_allocation:
         print(f"Priority Score {student['priority_score']:.1f}: {student['waiver']*100:.0f}% waiver")
     
-    # Run simulation
     print("\nRunning 1000 simulations...")
     results = simulator.simulate(
         num_offers=10,
@@ -94,7 +89,6 @@ def example_resampling_simulation(estimator):
         random_seed=42
     )
     
-    # Display results
     print("\nSimulation Results:")
     print("-" * 60)
     print(f"Expected acceptances: {results['expected_acceptances']:.2f} ± {results['std_acceptances']:.2f}")
