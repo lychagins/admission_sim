@@ -78,20 +78,7 @@ print(f"Standard deviation: {results['std_acceptances']:.2f}")
 print(f"Mean priority score: {results['mean_priority_score']:.2f}")
 ```
 
-### 4. Optimize Waiver Allocation
-
-```python
-# Find optimal allocation for your constraints
-optimization_result = simulator.optimize_waiver_allocation(
-    num_offers=15,              # Number of offers to make
-    total_waiver_budget=5.0,    # Total budget (500% in this case)
-    target_acceptances=10,      # Target number of acceptances
-    num_simulations=1000
-)
-
-print(f"Expected acceptances: {optimization_result['simulation_results']['expected_acceptances']:.2f}")
-print(f"Meets target: {optimization_result['meets_target']}")
-```
+<!-- Optimization API removed: use simulator.simulate with candidate allocations instead -->
 
 ## Working with CSV Files
 

@@ -13,9 +13,8 @@ The tool provides two main modules:
 
 2. **Resampling Simulator**: Uses resampling of past admission data to predict the composition of student body
    - Takes the number and size of tuition waivers as user input
-   - Uses Monte Carlo simulation with bootstrap resampling
-   - Predicts expected enrollment and student body composition
-   - Provides optimization suggestions for waiver allocation
+    - Uses Monte Carlo simulation with bootstrap resampling
+    - Predicts expected enrollment and student body composition
 
 Both modules use past admissions data including:
 - Background information and priority scores of students with offers
@@ -83,7 +82,6 @@ This will demonstrate:
 - How to fit the probability estimator
 - How to predict acceptance probabilities
 - How to simulate student body composition
-- How to optimize waiver allocation
 
 ## Data Format
 
@@ -123,7 +121,6 @@ Simulates student body composition using Monte Carlo simulation.
 
 **Key Methods:**
 - `simulate(num_offers, waiver_allocation, num_simulations)`: Run simulation
-- `optimize_waiver_allocation(num_offers, total_waiver_budget, target_acceptances)`: Find optimal allocation
 
 ## Use Cases
 
