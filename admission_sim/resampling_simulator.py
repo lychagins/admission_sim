@@ -26,7 +26,7 @@ class ResamplingSimulator:
     """
     
     def __init__(self, admissions_data: List[Dict], 
-                 waiver_probability_model: Optional[object] = None):
+                 waiver_probability_model: object):
         """
         Initialize the simulator with historical data.
         
@@ -43,6 +43,9 @@ class ResamplingSimulator:
             raise ValueError("admissions_data cannot be empty")
             
         self.admissions_data = admissions_data
+        # Require a waiver probability model to be supplied and fitted.
+        if waiver_probability_model is None or not getattr(waiver_probability_model, 'is_fitted', False):
+            raise ValueError("waiver_probability_model must be provided and must be fitted")
         self.waiver_probability_model = waiver_probability_model
         
     def simulate(self, num_offers: int, waiver_allocation: List[Dict],
@@ -136,84 +139,18 @@ class ResamplingSimulator:
         Returns:
             List of acceptance probabilities
         """
+        # Assume a fitted `waiver_probability_model` was provided in `__init__`.
         probabilities = []
-        
-        if self.waiver_probability_model and hasattr(self.waiver_probability_model, 'is_fitted'):
-            # Use the fitted model if available
-            if self.waiver_probability_model.is_fitted:
-                for student in waiver_allocation:
-                    prob = self.waiver_probability_model.predict_probability(
-                        priority_score=student.get('priority_score', 0),
-                        waiver=student.get('waiver', 0),
-                        background_score=student.get('background_score', 0)
-                    )
-                    probabilities.append(prob)
-            else:
-                # Fallback to resampling
-                probabilities = self._resample_probabilities(waiver_allocation)
-        else:
-            # Use resampling approach
-            probabilities = self._resample_probabilities(waiver_allocation)
-        
-        return probabilities
-    
-    def _resample_probabilities(self, waiver_allocation: List[Dict]) -> List[float]:
-        """
-        Estimate probabilities using bootstrap resampling from historical data.
-        
-        Args:
-            waiver_allocation: List of student waiver assignments
-            
-        Returns:
-            List of estimated acceptance probabilities
-        """
-        probabilities = []
-        
         for student in waiver_allocation:
-            # Find similar students in historical data
-            similar_students = self._find_similar_students(
+            prob = self.waiver_probability_model.predict_probability(
                 priority_score=student.get('priority_score', 0),
                 waiver=student.get('waiver', 0),
                 background_score=student.get('background_score', 0)
             )
-            
-            if similar_students:
-                # Calculate acceptance rate among similar students
-                acceptance_rate = sum(s.get('accepted', False) for s in similar_students) / len(similar_students)
-                probabilities.append(acceptance_rate)
-            else:
-                # Default probability if no similar students found
-                probabilities.append(0.5)
-        
+            probabilities.append(prob)
+
         return probabilities
     
-    def _find_similar_students(self, priority_score: float, waiver: float, 
-                               background_score: float = 0,
-                               priority_score_window: float = 10.0,
-                               waiver_window: float = 0.2) -> List[Dict]:
-        """
-        Find similar students in historical data.
-        
-        Args:
-            priority_score: Target priority score
-            waiver: Target waiver amount
-            background_score: Target background score
-            priority_score_window: Window for priority score similarity
-            waiver_window: Window for waiver similarity
-            
-        Returns:
-            List of similar students from historical data
-        """
-        similar = []
-        
-        for record in self.admissions_data:
-            score_diff = abs(record.get('priority_score', 0) - priority_score)
-            waiver_diff = abs(record.get('waiver', 0) - waiver)
-            
-            if score_diff <= priority_score_window and waiver_diff <= waiver_window:
-                similar.append(record)
-        
-        return similar
     
     def optimize_waiver_allocation(self, num_offers: int, total_waiver_budget: float,
                                    target_acceptances: int,

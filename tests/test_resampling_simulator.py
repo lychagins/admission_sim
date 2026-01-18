@@ -26,20 +26,23 @@ class TestResamplingSimulator(unittest.TestCase):
             {'priority_score': 84.0, 'waiver': 0.4, 'accepted': 0, 'background_score': 84},
             {'priority_score': 60.0, 'waiver': 0.1, 'accepted': 1, 'background_score': 60},
         ]
+        # Prepare a fitted estimator to pass into the simulator
+        self.estimator = WaiverProbabilityEstimator()
+        self.estimator.fit(self.sample_data)
         
     def test_initialization(self):
         """Test that simulator initializes correctly."""
-        simulator = ResamplingSimulator(self.sample_data)
+        simulator = ResamplingSimulator(self.sample_data, self.estimator)
         self.assertEqual(len(simulator.admissions_data), 12)
         
     def test_initialization_empty_data(self):
         """Test that initialization with empty data raises error."""
         with self.assertRaises(ValueError):
-            ResamplingSimulator([])
+            ResamplingSimulator([], self.estimator)
             
     def test_simulate(self):
         """Test basic simulation."""
-        simulator = ResamplingSimulator(self.sample_data)
+        simulator = ResamplingSimulator(self.sample_data, self.estimator)
         
         waiver_allocation = [
             {'priority_score': 95.5, 'waiver': 0.5, 'background_score': 95},
@@ -84,7 +87,7 @@ class TestResamplingSimulator(unittest.TestCase):
         
     def test_simulate_reproducibility(self):
         """Test that simulation with same seed produces same results."""
-        simulator = ResamplingSimulator(self.sample_data)
+        simulator = ResamplingSimulator(self.sample_data, self.estimator)
         
         waiver_allocation = [
             {'priority_score': 95.5, 'waiver': 0.5, 'background_score': 95},
@@ -106,19 +109,7 @@ class TestResamplingSimulator(unittest.TestCase):
         
         self.assertEqual(results1['expected_acceptances'], results2['expected_acceptances'])
         
-    def test_find_similar_students(self):
-        """Test finding similar students in historical data."""
-        simulator = ResamplingSimulator(self.sample_data)
-        
-        similar = simulator._find_similar_students(
-            priority_score=88.7,
-            waiver=0.3,
-            priority_score_window=5.0,
-            waiver_window=0.1
-        )
-        
-        # Should find students with priority scores within 5 points and waivers within 0.1
-        self.assertGreater(len(similar), 0)
+    # Removed test_find_similar_students: simulator now requires model-based probabilities
         
     def test_optimize_waiver_allocation(self):
         """Test waiver allocation optimization."""
@@ -141,7 +132,7 @@ class TestResamplingSimulator(unittest.TestCase):
         
     def test_percentiles_in_results(self):
         """Test that simulation results include percentile information."""
-        simulator = ResamplingSimulator(self.sample_data)
+        simulator = ResamplingSimulator(self.sample_data, self.estimator)
         
         waiver_allocation = [
             {'priority_score': 95.5, 'waiver': 0.5, 'background_score': 95},
