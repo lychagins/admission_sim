@@ -26,7 +26,6 @@ class TestResamplingSimulator(unittest.TestCase):
             {'priority_score': 84.0, 'waiver': 0.4, 'accepted': 0, 'background_score': 84},
             {'priority_score': 60.0, 'waiver': 0.1, 'accepted': 1, 'background_score': 60},
         ]
-        # Prepare a fitted estimator to pass into the simulator
         self.estimator = WaiverProbabilityEstimator()
         self.estimator.fit(self.sample_data)
         
@@ -57,7 +56,6 @@ class TestResamplingSimulator(unittest.TestCase):
             random_seed=42
         )
         
-        # Check that results contain expected keys
         self.assertIn('expected_acceptances', results)
         self.assertIn('std_acceptances', results)
         self.assertIn('acceptance_distribution', results)
@@ -136,7 +134,6 @@ class TestResamplingSimulator(unittest.TestCase):
         # Passing None should raise
         with self.assertRaises(ValueError):
             ResamplingSimulator(self.sample_data, None)
-
         # Passing an unfitted estimator should raise
         estimator = WaiverProbabilityEstimator()
         self.assertFalse(getattr(estimator, 'is_fitted', False))

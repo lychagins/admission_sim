@@ -9,7 +9,6 @@ import unittest
 
 class TestDataUtilsPlaceholder(unittest.TestCase):
     def test_placeholder(self):
-        # Basic sanity placeholder
         self.assertTrue(True)
 
 

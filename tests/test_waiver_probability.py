@@ -53,7 +53,6 @@ class TestWaiverProbabilityEstimator(unittest.TestCase):
         
         prob = estimator.predict_probability(priority_score=3, waiver=0.5, background_score=90)
         
-        # Check that probability is between 0 and 1
         self.assertGreaterEqual(prob, 0.0)
         self.assertLessEqual(prob, 1.0)
         
@@ -85,7 +84,6 @@ class TestWaiverProbabilityEstimator(unittest.TestCase):
         estimator = WaiverProbabilityEstimator()
         estimator.fit(self.sample_data)
         
-        # Test various scenarios
         test_cases = [
             (95.5, 0.0, 0),
             (95.5, 1.0, 100),
