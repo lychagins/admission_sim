@@ -131,6 +131,18 @@ class TestResamplingSimulator(unittest.TestCase):
         self.assertIn('50th', results['percentiles'])
         self.assertIn('90th', results['percentiles'])
 
+    def test_requires_fitted_model(self):
+        """Simulator should require a fitted waiver_probability_model."""
+        # Passing None should raise
+        with self.assertRaises(ValueError):
+            ResamplingSimulator(self.sample_data, None)
+
+        # Passing an unfitted estimator should raise
+        estimator = WaiverProbabilityEstimator()
+        self.assertFalse(getattr(estimator, 'is_fitted', False))
+        with self.assertRaises(ValueError):
+            ResamplingSimulator(self.sample_data, estimator)
+
 
 if __name__ == '__main__':
     unittest.main()
