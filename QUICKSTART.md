@@ -78,8 +78,6 @@ print(f"Standard deviation: {results['std_acceptances']:.2f}")
 print(f"Mean priority score: {results['mean_priority_score']:.2f}")
 ```
 
-<!-- Optimization API removed: use simulator.simulate with candidate allocations instead -->
-
 ## Working with CSV Files
 
 The package no longer provides CSV helpers. Use `pandas` or your own

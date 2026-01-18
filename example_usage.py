@@ -130,8 +130,7 @@ def example_optimization():
     print("  - Target acceptances: 10 students")
     print("\nOptimizing...")
     
-    # Optimization example removed — simulator focuses on simulation.
-
+    
 
 def main():
     """Run all examples."""

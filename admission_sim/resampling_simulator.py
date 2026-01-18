@@ -152,5 +152,3 @@ class ResamplingSimulator:
         return probabilities
     
     
-    # NOTE: optimization helper removed — simulator now focuses on simulation only.
-

@@ -1,8 +1,7 @@
-"""Placeholder tests for data utilities (module functions removed).
+"""Placeholder tests for data utilities.
 
-The data utility functions `load_admissions_data`, `save_admissions_data`, and
-`create_sample_csv` were removed from the package; data loading/saving should be
-handled by consumer code (e.g., `pandas.read_csv`) or moved into user scripts.
+If you need CSV helpers, use `pandas.read_csv` or implement utilities in your
+project scripts. These tests are a placeholder to keep the test suite stable.
 """
 
 import unittest
@@ -10,7 +9,7 @@ import unittest
 
 class TestDataUtilsPlaceholder(unittest.TestCase):
     def test_placeholder(self):
-        # Placeholder to keep test suite stable after removing data utils
+        # Basic sanity placeholder
         self.assertTrue(True)
 
 

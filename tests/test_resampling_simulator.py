@@ -109,9 +109,7 @@ class TestResamplingSimulator(unittest.TestCase):
         
         self.assertEqual(results1['expected_acceptances'], results2['expected_acceptances'])
         
-    # Removed test_find_similar_students: simulator now requires model-based probabilities
-        
-    # Removed optimization test: optimization API was removed from simulator
+    
         
     def test_percentiles_in_results(self):
         """Test that simulation results include percentile information."""
